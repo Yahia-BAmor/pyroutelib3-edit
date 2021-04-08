@@ -29,6 +29,7 @@
 from typing import List, Dict, Tuple
 from math import inf
 import heapq
+import csv
 
 from .datastore import Datastore
 from .util import SEARCH_LIMIT, _AStarQueueItem
@@ -130,46 +131,64 @@ class Router(Datastore):
 
             # Add all edges from this node to queue
             for toNode, edgeCost in self.routing.get(currItem.node, {}).items():
-                # Get area around toNode
-                toNodePos = self.rnodes[toNode]
-                self.getArea(*toNodePos)
-
-                # Ignore non-traversible edges
-                if edgeCost <= 0:
-                    continue
-
-                # No turn-around at nodes (no a-b-a)
-                if currToLen >= 2 and currItem.routeTo[-2] == toNode:
-                    continue
-
-                # Check if a mandatory move is performed and is followed
-                if currItem.forceNext and currItem.forceNext[0] != toNode:
-                    continue
-
-                # Gather info about added item
-                distance = self.distance(toNodePos, endLocation)
-                newItem = _AStarQueueItem(
-                    node=toNode,
-                    routeTo=currItem.routeTo + [toNode],
-                    costTo=currItem.costTo + edgeCost,
-                    heuristic=currItem.costTo + distance,
-                    forceNext=currItem.forceNext[1:],
-                )
-
-                # Check if a cheaper route to toNode exists
-                if newItem.costTo > knownScores.get(toNode, inf):
-                    continue
-
-                # Check if we run into a restriction
-                if self._routeIsForbidden(newItem.routeTo):
-                    continue
-
-                # Update the forceNext, if a new mandatory move is started
-                newItem.forceNext = self._routeForceNext(newItem.routeTo, newItem.forceNext)
-
-                # Save data to knownCosts and push into the queue
-                knownScores[toNode] = newItem.costTo
-                heapq.heappush(queue, newItem)
+                with open('data+id.csv', 'rt') as file:
+                    data = csv.reader(file)
+                    # Get area around toNode
+                    toNodePos = self.rnodes[toNode]
+                    self.getArea(*toNodePos)
+    
+                    # Ignore non-traversible edges
+                    if edgeCost <= 0:
+                        continue
+    
+                    # No turn-around at nodes (no a-b-a)
+                    if currToLen >= 2 and currItem.routeTo[-2] == toNode:
+                        continue
+    
+                    # Check if a mandatory move is performed and is followed
+                    if currItem.forceNext and currItem.forceNext[0] != toNode:
+                        continue
+                    
+                    CustomCost = 0
+                    Vitesse = 0
+                    Voitures = 0
+                    for row in data :
+                        print(str(toNode))
+                        print(row[-1])
+                        if (str(toNode) == row[-1]) and (row[3] != "NULL"):
+                            Vitesse = Vitesse + int(row[3])
+                            Voitures += 1
+                    if Voitures != 0 :
+                        CustomCost = Vitesse/Voitures
+                    else : 
+                        CustomCost = 0
+                        
+                    
+                    
+                    # Gather info about added item
+                    distance = self.distance(toNodePos, endLocation)
+                    newItem = _AStarQueueItem(
+                        node=toNode,
+                        routeTo=currItem.routeTo + [toNode],
+                        costTo=currItem.costTo + edgeCost + CustomCost,
+                        heuristic=currItem.costTo + distance,
+                        forceNext=currItem.forceNext[1:],
+                    )
+    
+                    # Check if a cheaper route to toNode exists
+                    if newItem.costTo > knownScores.get(toNode, inf):
+                        continue
+    
+                    # Check if we run into a restriction
+                    if self._routeIsForbidden(newItem.routeTo):
+                        continue
+    
+                    # Update the forceNext, if a new mandatory move is started
+                    newItem.forceNext = self._routeForceNext(newItem.routeTo, newItem.forceNext)
+    
+                    # Save data to knownCosts and push into the queue
+                    knownScores[toNode] = newItem.costTo
+                    heapq.heappush(queue, newItem)
 
         # No route
         return "no_route", []
