@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-with open("README.md", "r", encoding="utf-8") as f:
+with open("/content/pyroutelib3-edit/README.md", "r", encoding="utf-8") as f:
     readme = f.read()
 
 setup(
@@ -26,5 +26,5 @@ setup(
     packages=find_packages(include=["pyroutelib3", "pyroutelib3.*"]),
     python_requires=">=3.6, <4",
     install_requires=["osmiter>=1.1", "typing_extensions"],
-    data_files=["LICENSE.txt", "README.md"],
+    data_files=["/content/pyroutelib3-edit/LICENSE.txt", "/content/pyroutelib3-edit/README.md"],
 )
