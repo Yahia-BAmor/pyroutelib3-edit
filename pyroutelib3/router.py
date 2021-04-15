@@ -131,7 +131,7 @@ class Router(Datastore):
 
             # Add all edges from this node to queue
             for toNode, edgeCost in self.routing.get(currItem.node, {}).items():
-                with open('data+id.csv', 'rt') as file:
+                with open('/content/2020-07-11ref(6023226).csv', 'rt') as file:
                     data = csv.reader(file)
                     # Get area around toNode
                     toNodePos = self.rnodes[toNode]
