@@ -153,22 +153,26 @@ class Router(Datastore):
                     Vitesse = 0
                     Voitures = 0
                     for row in data :
+                        print(str(toNode))
+                        print(row[-1])
                         if (str(toNode) == row[-1]) and (row[3] != "NULL"):
                             Vitesse = Vitesse + int(row[3])
                             Voitures += 1
+                            print("l9it ka3ba")
                     if Voitures != 0 :
-                        CustomCost = Vitesse/Voitures
+                        CustomCost = round(Vitesse/Voitures)
                     else : 
-                        CustomCost = 0
-                        
-                    
-                    
+                        CustomCost = 0.001
+
+                    if CustomCost == 0:
+                        CustomCost = 0.1
+
                     # Gather info about added item
                     distance = self.distance(toNodePos, endLocation)
                     newItem = _AStarQueueItem(
                         node=toNode,
                         routeTo=currItem.routeTo + [toNode],
-                        costTo=currItem.costTo + edgeCost + CustomCost,
+                        costTo=currItem.costTo + edgeCost + (1/CustomCost),
                         heuristic=currItem.costTo + distance,
                         forceNext=currItem.forceNext[1:],
                     )
