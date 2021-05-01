@@ -153,12 +153,9 @@ class Router(Datastore):
                     Vitesse = 0
                     Voitures = 0
                     for row in data :
-                        print(str(toNode))
-                        print(row[-1])
                         if (str(toNode) == row[-1]) and (row[3] != "NULL"):
                             Vitesse = Vitesse + int(row[3])
                             Voitures += 1
-                            print("l9it ka3ba")
                     if Voitures != 0 :
                         CustomCost = round(Vitesse/Voitures)
                     else : 
